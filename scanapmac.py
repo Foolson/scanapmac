@@ -1,15 +1,18 @@
 #!/usr/bin/python3
 
-import wifi
+import wifi, colorama
 from wifi import Cell
+from colorama import init, Fore, Back, Style
 
-logName = "mac.log"
-interface = "wlp3s0"
-ssidFilter = "eduroam"
+logName = 'mac.log'
+interface = 'wlp3s0'
+ssidFilter = 'eduroam'
+
+init(autoreset=True)
 
 try:
   f = open(logName, 'x')
-  f.write("# mac log for "+ssidFilter+"\n")
+  f.write('# MAC log for ' + ssidFilter + "\n")
   f.close()
 except FileExistsError:
   pass
@@ -22,7 +25,7 @@ try:
         macLog =  f.read()
         if not ap.address in macLog:
           with open(logName, "a") as f:
-            print(ap.address+" added to "+logName)
+            print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + ap.address + ' added to ' + logName)
             f.write(ap.address+"\n")
 except KeyboardInterrupt:
-  print("")
+  print('')
