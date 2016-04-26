@@ -25,4 +25,4 @@ try:
             print(ap.address+" "+"added to "+logName)
             f.write(ap.address+"\n")
 except KeyboardInterrupt:
-  pass   
+  print("")   
