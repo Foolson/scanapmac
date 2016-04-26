@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import wifi
-from wifi import Cell, Scheme
+import wifi, wifi
+from wifi import Cell
 
 logName = "mac.log"
 interface = "wlp3s0"
@@ -22,7 +22,7 @@ try:
         macLog =  f.read()
         if not ap.address in macLog:
           with open(logName, "a") as f:
-            print(ap.address+" "+"added to "+logName)
+            print(ap.address+" added to "+logName)
             f.write(ap.address+"\n")
 except KeyboardInterrupt:
-  print("")   
+  print("")
