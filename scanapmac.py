@@ -9,7 +9,7 @@ ssidFilter = "eduroam"
 
 try:
   f = open(logName, 'x')
-  f.write("# mac log for "+ssidFilter+"\r")
+  f.write("# mac log for "+ssidFilter+"\n")
   f.close()
 except FileExistsError:
   pass
@@ -22,6 +22,6 @@ try:
         if not ap.address in macLog:
           with open(logName, "a") as f:
             print(ap.address+" "+"added to "+logName)
-            f.write(ap.address+"\r")
+            f.write(ap.address+"\n")
 except KeyboardInterrupt:
   pass   
