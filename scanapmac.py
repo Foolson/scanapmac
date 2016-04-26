@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import wifi, wifi
+import wifi
 from wifi import Cell
 
 logName = "mac.log"
