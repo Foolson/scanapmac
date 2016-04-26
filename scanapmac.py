@@ -13,6 +13,7 @@ try:
   f.close()
 except FileExistsError:
   pass
+  
 try:
   while True:
     apScan = Cell.where(interface, lambda c: c.ssid == ssidFilter)
