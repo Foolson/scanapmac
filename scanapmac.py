@@ -4,11 +4,14 @@ import wifi, colorama
 from wifi import Cell
 from colorama import init, Fore, Back, Style
 
-interface = 'wlp3s0'
-ssidFilter = 'eduroam'
+interface = input("Interface: ")
+ssidFilter = input("SSID: ")
+
 logName = ssidFilter + '-mac.log'
 
 init(autoreset=True)
+
+print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + 'Logging MAC from ' + ssidFilter + ' to ' + logName)
 
 try:
   f = open(logName, 'x')
@@ -25,7 +28,7 @@ try:
         macLog =  f.read()
         if not ap.address in macLog:
           with open(logName, "a") as f:
-            print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + ap.address + ' added to ' + logName)
+            print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + ap.address + ' added to ' + logName)
             f.write(ap.address+"\n")
 except KeyboardInterrupt:
   print('')
