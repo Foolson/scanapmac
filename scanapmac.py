@@ -4,9 +4,9 @@ import wifi, colorama
 from wifi import Cell
 from colorama import init, Fore, Back, Style
 
-logName = 'mac.log'
 interface = 'wlp3s0'
 ssidFilter = 'eduroam'
+logName = ssidFilter + '-mac.log'
 
 init(autoreset=True)
 
