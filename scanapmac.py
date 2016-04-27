@@ -13,15 +13,30 @@ args = parser.parse_args()
 if args.interface:
   interface = args.interface
 else:
-  interface = input('Interface (Wireless interface to use, ex. wlp3s0): ')
+  while True:
+    interface = input('Interface (wlp3s0): ')
+    if not interface:
+      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
+    else:
+      break
 if args.ssid:
   ssidFilter = args.ssid
 else:
-  ssidFilter = input('SSID (SSID to filter out, ex. eduroam): ')
+  while True:
+    ssidFilter = input('SSID (eduroam): ')
+    if not ssidFilter:
+      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
+    else:
+      break
 if args.output:
   logName = args.output
 else:
-  logName = input('Output (Where to save the logfile, ex. /root/eduroam.log): ')
+  while True:
+    logName = input('Output (/root/eduroam.log): ')
+    if not logName:
+      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
+    else:
+      break
 
 init(autoreset=True)
 
@@ -38,7 +53,7 @@ try:
     try:
       apScan = Cell.all(interface)
     except wifi.exceptions.InterfaceError:
-      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Wierd error, probably safe to continue, I guess...')
+      print(Style.BRIGHT + Fore.RED + 'ERROR: ' + Style.RESET_ALL + 'Wierd stuff is going on, probably safe to continue, I guess...')
     for ap in apScan:
       apMac = ap.address.lower()
       if ap.ssid == ssidFilter:
