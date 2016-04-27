@@ -29,7 +29,6 @@ print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + 'Logging MAC from
 
 try:
   f = open(logName, 'x')
-  f.write('# MAC log for ' + ssidFilter + "\n")
   f.close()
 except FileExistsError:
   pass
