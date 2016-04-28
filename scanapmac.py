@@ -8,7 +8,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--interface', help='Wireless interface to use, ex. wlp3s0')
 parser.add_argument('-s', '--ssid', help='SSID to filter out, ex. eduroam')
 parser.add_argument('-o', '--output', help='Where to save the logfile, ex. /root/eduroam.log')
-args = parser.parse_args() 
+args = parser.parse_args()
+
+def userInput():
+  while True:
+    interface = input('')
+    if not interface:
+      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
+    else:
+      break
 
 if args.interface:
   interface = args.interface
