@@ -1,76 +1,93 @@
 #!/usr/bin/python3
 
-import wifi, colorama, argparse, time
+# Import modules
+import wifi, colorama, argparse, time, csv
 from wifi import Cell
 from colorama import init, Fore, Style
 
+init(autoreset=True)
+
+# Parse CLI arguments 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--interface', help='Wireless interface to use, ex. wlp3s0')
-parser.add_argument('-s', '--ssid', help='SSID to filter out, ex. eduroam')
+parser.add_argument('-q', '--query', help='Queries seperated by comma, ex. eduroam,2.412 GHz')
 parser.add_argument('-o', '--output', help='Where to save the logfile, ex. /root/eduroam.log')
 args = parser.parse_args()
 
-def userInput():
+# Function for user input
+def userInput(question):
   while True:
-    interface = input('Interface (wlp3s0): ')
-    if not interface:
+    userInput = input(question)
+    if not userInput:
       print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
     else:
+      return userInput
       break
 
+# User input
 if args.interface:
   interface = args.interface
 else:
-  while True:
-    interface = input('Interface (wlp3s0): ')
-    if not interface:
-      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
-    else:
-      break
-if args.ssid:
-  ssidFilter = args.ssid
+  interface = userInput('Interface (wlp3s0): ')
+if args.query:
+  query = args.query.split(',') 
 else:
-  while True:
-    ssidFilter = input('SSID (eduroam): ')
-    if not ssidFilter:
-      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
-    else:
-      break
+  query = input('Queries seperated by comma, press ENTER to skip (eduroam,2.412 GHz): ').split(',')
 if args.output:
-  logName = args.output
+  csvName = args.output
 else:
-  while True:
-    logName = input('Output (/root/eduroam.log): ')
-    if not logName:
-      print(Style.BRIGHT + Fore.YELLOW + 'WARNING: ' + Style.RESET_ALL + 'Please enter something more than NULL.')
-    else:
-      break
+  csvName = userInput('Output (/root/eduroam.csv): ')
 
-init(autoreset=True)
+# Print info in start of script
+print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + 'Logging AP info by filter ' + str(query) + ' to ' + csvName)
 
-print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + 'Logging MAC from ' + ssidFilter + ' to ' + logName)
-
+# Init .csv-file
+fieldnames = ['ssid', 
+              'signal',
+              'quality',
+              'frequency',
+              'bitrates',
+              'encrypted',
+              'channel',
+              'address',
+              'mode'
+              ]
 try:
-  f = open(logName, 'x')
-  f.close()
+  with open(csvName, 'x') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
 except FileExistsError:
   pass
-  
+
 try:
   while True:
     try:
+      # Scan WiFi
       apScan = Cell.all(interface)
     except wifi.exceptions.InterfaceError:
-      print(Style.BRIGHT + Fore.RED + 'ERROR: ' + Style.RESET_ALL + 'Wierd stuff is going on, probably safe to continue, I guess...')
+      pass
+    # Go thorugh and filter info
     for ap in apScan:
       apMac = ap.address.lower()
-      if ap.ssid == ssidFilter:
-        with open(logName, 'r') as f:
-          macLog =  f.read()
-          if not apMac in macLog:
-            with open(logName, 'a') as f:
-              print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + apMac + ' added to ' + logName)
-              f.write(apMac + "/")
-    time.sleep(2)
+      # Compare query with info about AP
+      apInfo = [ap.ssid,ap.frequency,str(ap.encrypted),str(ap.channel),apMac,ap.mode]
+      if set(query).issubset(apInfo) or query == ['']:
+        with open(csvName, 'r') as csvfile:
+          csvRead =  csvfile.read()
+          if not apMac in csvRead:
+            # Write info to .csv-file
+            with open(csvName, 'a') as csvfile:
+              print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + apMac + ' added to ' + csvName)
+              writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+              writer.writerow({'ssid' : ap.ssid,
+                               'signal' : ap.signal,
+                               'quality' : ap.quality,
+                               'frequency' : ap.frequency,
+                               'bitrates' : ap.bitrates, 
+                               'encrypted' : ap.encrypted,
+                               'channel' : ap.channel,
+                               'address' : apMac,
+                               'mode' : ap.mode
+                               })
 except KeyboardInterrupt:
   print('')
