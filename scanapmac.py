@@ -32,7 +32,7 @@ else:
 if args.query:
   query = args.query.split(',') 
 else:
-  query = userInput('Queries seperated by comma (eduroam,2.412 GHz): ').split(',')
+  query = input('Queries seperated by comma, press ENTER to skip (eduroam,2.412 GHz): ').split(',')
 if args.output:
   csvName = args.output
 else:
@@ -71,7 +71,7 @@ try:
       apMac = ap.address.lower()
       # Compare query with info about AP
       apInfo = [ap.ssid,ap.frequency,str(ap.encrypted),str(ap.channel),apMac,ap.mode]
-      if set(query).issubset(apInfo):
+      if set(query).issubset(apInfo) or query == ['']:
         with open(csvName, 'r') as csvfile:
           csvRead =  csvfile.read()
           if not apMac in csvRead:
