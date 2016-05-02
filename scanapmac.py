@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # Import modules
-import wifi, colorama, argparse, time, csv
+import wifi, colorama, argparse, time, csv, re
 from wifi import Cell
 from colorama import init, Fore, Style
 
@@ -10,8 +10,8 @@ init(autoreset=True)
 # Parse CLI arguments 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--interface', help='Wireless interface to use, ex. wlp3s0')
-parser.add_argument('-q', '--query', help='Queries seperated by comma, ex. eduroam,2.412 GHz')
-parser.add_argument('-o', '--output', help='Where to save the logfile, ex. /root/eduroam.log')
+parser.add_argument('-q', '--query', help='Queries seperated by comma, ex. eduroam,2.4,11')
+parser.add_argument('-o', '--output', help='Where to save the logfile, ex. /root/eduroam.csv')
 args = parser.parse_args()
 
 # Function for user input
@@ -32,7 +32,7 @@ else:
 if args.query:
   query = args.query.split(',') 
 else:
-  query = input('Queries seperated by comma, press ENTER to skip (eduroam,2.412 GHz): ').split(',')
+  query = input('Queries seperated by comma, press ENTER to skip (eduroam,2.4,11): ').split(',')
 if args.output:
   csvName = args.output
 else:
@@ -69,8 +69,13 @@ try:
     # Go thorugh and filter info
     for ap in apScan:
       apMac = ap.address.lower()
+      regex = re.search('(\d)\.',ap.frequency)
+      if regex.group(1) == '2':
+        apFreq = 2.4
+      else:
+        apFreq = 5
       # Compare query with info about AP
-      apInfo = [ap.ssid,ap.frequency,str(ap.encrypted),str(ap.channel),apMac,ap.mode]
+      apInfo = [ap.ssid,str(apFreq),str(ap.encrypted),str(ap.channel),apMac,ap.mode]
       if set(query).issubset(apInfo) or query == ['']:
         with open(csvName, 'r') as csvfile:
           csvRead =  csvfile.read()
@@ -82,7 +87,7 @@ try:
               writer.writerow({'ssid' : ap.ssid,
                                'signal' : ap.signal,
                                'quality' : ap.quality,
-                               'frequency' : ap.frequency,
+                               'frequency' : apFreq,
                                'bitrates' : ap.bitrates, 
                                'encrypted' : ap.encrypted,
                                'channel' : ap.channel,
