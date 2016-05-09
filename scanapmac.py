@@ -7,7 +7,7 @@ from colorama import init, Fore, Style
 
 init(autoreset=True)
 
-# Parse CLI arguments 
+# Parse CLI arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--interface', help='Wireless interface to use, ex. wlp3s0')
 parser.add_argument('-q', '--query', help='Queries seperated by comma, ex. eduroam,2.4,11')
@@ -30,7 +30,7 @@ if args.interface:
 else:
   interface = userInput('Interface (wlp3s0): ')
 if args.query:
-  query = args.query.split(',') 
+  query = args.query.split(',')
 else:
   query = input('Queries seperated by comma, press ENTER to skip (eduroam,2.4,11): ').split(',')
 if args.output:
@@ -42,15 +42,16 @@ else:
 print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + 'Logging AP info by filter ' + str(query) + ' to ' + csvName)
 
 # Init .csv-file
-fieldnames = ['ssid', 
-              'signal',
-              'quality',
-              'frequency',
-              'bitrates',
-              'encrypted',
-              'channel',
-              'address',
-              'mode'
+fieldnames = ['SSID',
+              'Signal',
+              'Quality',
+              'Frequency',
+              'Bitrates',
+              'Encrypted',
+              'Encryption Type',
+              'Channel',
+              'MAC address',
+              'Mode'
               ]
 try:
   with open(csvName, 'x') as csvfile:
@@ -84,15 +85,16 @@ try:
             with open(csvName, 'a') as csvfile:
               print(Style.BRIGHT + Fore.GREEN + 'INFO: ' + Style.RESET_ALL + apMac + ' added to ' + csvName)
               writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-              writer.writerow({'ssid' : ap.ssid,
-                               'signal' : ap.signal,
-                               'quality' : ap.quality,
-                               'frequency' : apFreq,
-                               'bitrates' : ap.bitrates, 
-                               'encrypted' : ap.encrypted,
-                               'channel' : ap.channel,
-                               'address' : apMac,
-                               'mode' : ap.mode
+              writer.writerow({'SSID' : ap.ssid,
+                               'Signal' : ap.signal,
+                               'Quality' : ap.quality,
+                               'Frequency' : apFreq,
+                               'Bitrates' : ap.bitrates,
+                               'Encrypted' : ap.encrypted,
+                               'Encryption Type' : ap.encryption_type,
+                               'Channel' : ap.channel,
+                               'MAC address' : apMac,
+                               'Mode' : ap.mode
                                })
 except KeyboardInterrupt:
   print('')
